@@ -28,17 +28,17 @@ def returnhome():
 
 @app.route('/predict', methods = ['GET', 'POST'])
 def predict():
-    
+
     if request.method == 'POST':
         file=request.files['file']
         filename=secure_filename(file.filename)
-        #file.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
         #getPrediction(filename)
         print("Entered Prediction Logic")
         print("Loading model...")
         model = keras.models.load_model('Covid_Vgg.h5')
         print("Model loaded successfully")
-        image = load_img(filename, target_size=(150, 150))
+        image = load_img(os.path.join(app.config['UPLOAD_FOLDER'],filename), target_size=(150, 150))
         print("Image is converted to 150*150")
         im_final = np.expand_dims(image, axis=0)
         print("Expanded dimension...")
@@ -51,7 +51,8 @@ def predict():
             else:
                 result = "No Covid Symptoms Detected"
         flash(result)
-        return render_template('about.html')
+    
+    return render_template('about.html')
     
 
 if __name__ == '__main__':
